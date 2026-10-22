@@ -31,14 +31,19 @@ def prediksi(paket, merek, model, tahun, km, mesin_l, bahan_bakar, bodi, transmi
     n = info["jumlah_per_model"].get(lengkap, 0)
     model_g = lengkap if lengkap in info["model_dikenal"] else f"{merek} LAINNYA"
     keyakinan = "Tinggi" if n >= 30 else "Sedang" if n >= info["min_model"] else "Rendah"
+    merek_kecil = info["jumlah_per_merek"][merek] < info["merek_kecil"]
+    if merek_kecil:
+        keyakinan = "Rendah"
     baris = pd.DataFrame([{
         "merek": merek, "model_g": model_g, "bahan_bakar": bahan_bakar, "bodi": bodi,
-        "transmisi": transmisi, "umur": max(info["tahun_acuan"] - tahun, 0),
+        "transmisi": transmisi, "sumber": info["sumber_prediksi"],
+        "umur": max(info["tahun_acuan"] - tahun, 0),
         "km": km, "mesin_l": 0.0 if bahan_bakar == "Listrik" else mesin_l}])
     est = float(paket["est"].predict(baris)[0])
     f_low, f_high = info["faktor_rentang"][keyakinan]
     return {"estimasi": est, "rendah": est * f_low, "tinggi": est * f_high,
-            "keyakinan": keyakinan, "n": n}
+            "keyakinan": keyakinan, "n": n, "merek_kecil": merek_kecil,
+            "n_merek": info["jumlah_per_merek"][merek]}
 
 
 def cek_input(tahun, km, mesin_l, bahan_bakar, tahun_acuan):
@@ -67,7 +72,7 @@ daftar_merek = list(info["merek_didukung"])
 
 st.title("🚗 Estimasi Harga Mobil Bekas")
 st.caption("Isi spesifikasi mobil, dapatkan estimasi harga, rentang harga, dan tingkat keyakinannya. "
-           "Dibuat dari ±18.800 iklan OLX & Mobil123 (Jabodetabek, 2025–2026).")
+           "Dibuat dari ±19.500 iklan OLX, Mobil123 (Jabodetabek, 2025–2026) dan Carsome (2023).")
 
 # ---------- input spesifikasi (dipakai kedua tab) ----------
 st.subheader("Spesifikasi mobil")
@@ -129,7 +134,11 @@ def tampilkan_hasil():
     st.write(f"**Rentang wajar:** {rp(hasil['rendah'])} sampai {rp(hasil['tinggi'])}")
     badge = {"Tinggi": "✅", "Sedang": "🟡", "Rendah": "⚠️"}[hasil["keyakinan"]]
     st.write(f"**Tingkat keyakinan:** {badge} {hasil['keyakinan']}")
-    st.caption(PENJELASAN[hasil["keyakinan"]].format(n=hasil["n"]))
+    if hasil["merek_kecil"]:
+        st.caption(f"Data merek ini masih sedikit ({hasil['n_merek']} iklan), jadi anggap estimasi ini kasar "
+                   "dan lebar rentangnya.")
+    else:
+        st.caption(PENJELASAN[hasil["keyakinan"]].format(n=hasil["n"]))
 
 
 tab_jual, tab_beli = st.tabs(["Saya penjual", "Saya pembeli"])
@@ -170,5 +179,7 @@ with st.expander("Batasan & sumber data"):
         "- Harga yang dipakai adalah **harga iklan**, bukan harga transaksi akhir.\n"
         "- Data hanya dari Jabodetabek dan merek tertentu; merek lain belum didukung.\n"
         "- Kondisi fisik, riwayat servis, dan kelengkapan surat tidak ikut dihitung.\n"
-        "- Sumber data: Thania, I. & Oktavia, T. (2026), Zenodo, DOI 10.5281/zenodo.21792616, CC BY 4.0."
+        "- Merek dengan data sedikit (Nissan, Mazda) selalu diberi keyakinan Rendah.\n"
+        "- Sumber data: Thania, I. & Oktavia, T. (2026), Zenodo, DOI 10.5281/zenodo.21792616, CC BY 4.0; "
+        "dan \"Used Car Listings in Indonesia\" (Kaggle, CC0, data dari carsome.id 2023)."
     )
