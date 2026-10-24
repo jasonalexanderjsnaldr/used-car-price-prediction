@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 
 # Tipe bodi untuk model yang tidak ada di data Zenodo.
+# Ini pengetahuan umum tentang modelnya (bukan dari data), dipakai supaya kolom bodi tidak kosong.
 BODI_MANUAL = {
     ("Wuling", "Almaz"): "SUV", ("Wuling", "Almaz RS"): "SUV",
     ("Wuling", "Confero"): "MPV", ("Wuling", "Confero S"): "MPV",
@@ -49,6 +50,7 @@ def muat_carsome(path, zen):
     })
     c["nama_u"] = c["nama"].str.upper().str.strip()
 
+    # nama model: samakan dengan nama model Zenodo (cocokkan awalan terpanjang)
     kamus = {m: {str(x).upper(): str(x) for x in g["model"].unique()} for m, g in zen.groupby("merek")}
 
     def cari_model(merek, nama):
