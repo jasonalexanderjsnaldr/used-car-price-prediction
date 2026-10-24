@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Sistem operasi / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# CATATAN: folder data/ dan models/model_v2.joblib SENGAJA tidak diabaikan,
+# karena app yang di-deploy memuat models/model_v2.joblib.
