@@ -180,15 +180,6 @@ streamlit run app/app.py
 
 App di-deploy di [Streamlit Community Cloud](https://streamlit.io/cloud) langsung dari repo ini: main file `app/app.py`, dependensi dari `requirements.txt`, tema dari `.streamlit/config.toml`.
 
-## 🗺️ Rencana pengembangan
-
-- [x] Insight bisnis (notebook 03): laju penurunan harga, merek/model paling tahan harga, premium varian, mobil listrik vs bensin
-- [ ] Insight lanjutan: waktu terjual dan strategi harga (butuh data tanggal terjual)
-- [ ] Tambah merek (Hyundai, Kia, BMW, dll) lewat data iklan baru
-- [ ] Normalisasi nama model (mis. `Gran max` vs `Gran Max`) di tahap cleaning
-- [ ] Penyesuaian inflasi / indeks waktu untuk menggabung data lintas tahun
-- [ ] Fitur opsional harga mobil baru untuk membantu merek berdata sedikit
-
 ## 🙏 Kredit
 
 - Dataset iklan OLX + Mobil123: **Thania, I. & Oktavia, T. (2026)**, Binus University, Zenodo, DOI [10.5281/zenodo.21792616](https://doi.org/10.5281/zenodo.21792616), lisensi CC BY 4.0.
@@ -199,6 +190,6 @@ App di-deploy di [Streamlit Community Cloud](https://streamlit.io/cloud) langsun
 
 <div align="center">
 
-Dibuat sebagai project portofolio data science · [GitHub](https://github.com/USERNAME) · [Portofolio](https://GANTI-DENGAN-LINK-PORTOFOLIO)
+Dibuat sebagai project portofolio pribadi.
 
 </div>
