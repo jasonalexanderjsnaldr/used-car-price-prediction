@@ -1,7 +1,3 @@
-"""
-Estimasi Harga Mobil Bekas (v3)
-Jalankan dari folder paling luar project:   streamlit run app/app.py
-"""
 import base64
 from pathlib import Path
 
@@ -10,18 +6,16 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-# ======================= ISI BAGIAN INI (boleh dikosongkan) =======================
-NAMA_PEMBUAT = ""          # contoh: "Nama Kamu"
-LINK_GITHUB = ""           # contoh: "https://github.com/usernamekamu/Used-car-price-prediction"
-LINK_PORTOFOLIO = ""       # contoh: "https://namakamu.vercel.app"
-# ==================================================================================
+
+NAMA_PEMBUAT = "Jason Alexander"
+LINK_GITHUB = "https://github.com/jasonalexanderjsnaldr/used-car-price-prediction"
+LINK_PORTOFOLIO = "https://jsn-aldr-jasons.vercel.app/"
 
 PATH_MODEL = Path(__file__).resolve().parent.parent / "models" / "model_v2.joblib"
 MODEL_LAIN = "Model lain / tidak ada di daftar"
 MEREK_LAIN = "Merek lain (BMW, Hyundai, Kia, dll)"
 
 # Angka untuk tab "Insight pasar". Sumber: notebook 03_insight_bisnis.ipynb (18.884 iklan marketplace).
-# Perbarui bagian ini kalau notebook 03 menghasilkan angka berbeda.
 INSIGHT = {
     "iklan": 18884,
     "retensi": [100, 96, 89, 83, 76, 71, 67, 61, 57, 52, 48, 44, 39, 34, 29],      # umur 1..15, umur 1 = 100
@@ -241,41 +235,41 @@ transform-origin:50% 100%;transform:rotate(var(--a));animation:sweep 1.3s cubic-
 
 MANTAP_CSS = '<style>\n:root{--ink:#0D1530;--txt:#1F2A4D;--mut:#55608A;--dim:#7B86A5;--line:rgba(13,21,48,.14);--acc:#2F6FD0;--cy:#2F6FD0;--vi:#2F6FD0;--pk:#F59E0B;--grad:linear-gradient(90deg,#2F6FD0,#F59E0B);--surf:#fff;--card:#fff;--track:#E6E9F2;--hi:#FFF0B8;--onacc:#fff}\n.stApp{background:radial-gradient(800px 480px at 12% 8%,#FFE98F,transparent 62%),radial-gradient(700px 400px at 95% 60%,#FFC83A,transparent 60%),#FACF35!important}\n.block-container{max-width:1240px}\n.mh h1{font-size:clamp(2.5rem,5.6vw,4.7rem)!important;line-height:1.02!important;font-weight:800!important;letter-spacing:-.04em!important;color:#0D1530!important;margin:.3rem 0 .5rem!important;padding:0!important}\n.mh h1 em{font-style:normal;background:#0D1530;color:#FACF35;padding:0 .16em;border-radius:.2em;display:inline-block;transform:rotate(-1.8deg);animation:wob 3s ease-in-out infinite alternate}\n.mh p.sub{font-size:1.3rem;color:#0D1530;font-weight:500;margin:0 0 .6rem}\n.stage{position:relative;height:290px;margin:.6rem 0 1.4rem}\n.stage img.car{position:absolute;left:3%;bottom:16px;width:80%;animation:drive 3s ease-in-out infinite alternate;filter:drop-shadow(0 24px 16px rgba(90,55,0,.4))}\n.stage .road{position:absolute;left:0;right:0;bottom:8px;height:4px;border-radius:4px;background:repeating-linear-gradient(90deg,#0D1530 0 34px,transparent 34px 68px);animation:road .9s linear infinite;opacity:.75}\n.coin{position:absolute;width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#FFF6B8,#F7B500 55%,#B97800);border:4px solid #E09A00;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;color:#8A5500;box-shadow:0 14px 24px rgba(120,70,0,.35);animation:bob 3s ease-in-out infinite}\n.coin.c1{right:4%;top:2%}.coin.c2{left:0;top:26%;width:54px;height:54px;font-size:.9rem;animation-delay:-1s}.coin.c3{right:16%;bottom:0;width:96px;height:96px;font-size:1.5rem;animation-delay:-2s}\n.perks{display:flex;flex-wrap:wrap;gap:14px 26px}\n.perks div{display:flex;align-items:center;gap:10px;font-weight:800;color:#0D1530;font-size:.92rem;line-height:1.2}\n.perks i{font-style:normal;width:46px;height:46px;border-radius:15px;background:#0D1530;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:transform .25s}\n.perks div:hover i{transform:rotate(-8deg) scale(1.12)}\n.st-key-spec{position:relative;border:0!important;border-radius:24px!important;box-shadow:0 34px 60px -22px rgba(80,50,0,.55);padding:1.3rem 1.4rem 1rem 3.3rem!important}\n.st-key-spec:before{content:"";position:absolute;left:27px;top:56px;bottom:50px;width:4px;border-radius:4px;background:repeating-linear-gradient(180deg,#2F6FD0 0 10px,transparent 10px 20px);animation:flow 1s linear infinite}\n.st-key-spec:after{content:"\\2713";position:absolute;left:14px;bottom:18px;width:30px;height:30px;border-radius:50%;border:3px solid #2F6FD0;color:#2F6FD0;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}\n.st-key-spec .ct{position:relative;font-size:1.05rem;color:#0D1530;text-transform:none;letter-spacing:0;font-weight:800}\n.st-key-spec .ct:before{content:"\\2605";position:absolute;left:-2.6rem;top:-5px;width:30px;height:30px;border-radius:50%;background:#2F6FD0;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem}\n.res,.vcard,.plan,.proj,.card2{border:0!important;box-shadow:0 26px 50px -24px rgba(80,50,0,.5)}\n.res .carart{filter:brightness(0) opacity(.12)}\n.how{display:none}\n.ft,.ft a{color:#0D1530!important}\n@keyframes bob{50%{transform:translateY(-16px) rotate(9deg)}}\n@keyframes drive{from{transform:translateX(-12px) rotate(-.5deg)}to{transform:translateX(16px) rotate(.5deg)}}\n@keyframes wob{to{transform:rotate(1.2deg) scale(1.03)}}\n@keyframes flow{to{background-position:0 20px}}\n@media (max-width:760px){.stage{height:210px}.coin.c3{display:none}}\n.stat,.pc,.card2,.proj,.how,.kpi div,.sum,.chip,.badge,.st-key-spec{background:var(--surf)!important}\n.res,.vcard.ok,.vcard.low,.vcard.high,.plan,.stop,.hero{background:var(--card)!important}\n.pc.mid{background:var(--hi)!important}\n.gauge,.hb .ht,.meter i{background:var(--track)}\n.hero h1,.stat b,.how .st b,.pc b,.pv,.dc b,.vt,.sum b,.ins-h,.kpi b,.card2 h5,.proj h5,.hb .hv,.stop h3,.proj>p b,.badge{color:var(--ink)!important}\n.hero:before,.hero:after,.res:after{display:none}\n.hero .art,.res .carart{filter:brightness(0)}\n.hero .road{background:repeating-linear-gradient(90deg,var(--ink) 0 34px,transparent 34px 68px)}\n.needle{background:linear-gradient(var(--ink),rgba(0,0,0,.2));filter:none}\n.hub{background:var(--ink);box-shadow:0 0 0 5px var(--line)}\n.chip b,.note a,.ft a{color:var(--acc)}\n.tb td{color:var(--txt);border-bottom:1px solid var(--line)}\n.al.warn{background:#FFF1C9;border-color:#C98A00;color:#6B4400}\n.al.info{background:#E3F0F7;border-color:#2B7A9B;color:#0B4A5E}\n.stApp input,.stApp div[data-baseweb="select"] *,.stApp summary,.stApp summary *{color:var(--ink)!important}\ndiv[data-baseweb="select"]>div,div[data-baseweb="base-input"]{background:#fff!important}\ndiv[data-baseweb="popover"] ul,div[data-baseweb="popover"] li{background:#fff!important;color:#111!important}\ndiv[data-baseweb="popover"] li *{color:#111!important}\ndiv[data-baseweb="tab-list"]{background:var(--surf)}\nbutton[data-baseweb="tab"][aria-selected="true"],div[role="radiogroup"]>label:has(input:checked){background:var(--ink)!important;color:var(--onacc)}\ndiv[role="radiogroup"]>label{background:#fff}\n.stButton>button,.stDownloadButton>button{background:#fff;color:var(--ink)}\n</style>'
 MANTAP_FIX = r'''
-.stApp [data-baseweb="select"] *,.stApp [data-baseweb="input"] *,.stApp [data-baseweb="base-input"] *,.stApp [data-testid="stNumberInputContainer"],.stApp [data-testid="stNumberInputContainer"] *{background-color:#fff!important;color:#0D1530!important;-webkit-text-fill-color:#0D1530!important}
-.stApp [data-baseweb="select"]>div,.stApp [data-baseweb="input"]{border:1.5px solid #C9D1E8!important;border-radius:12px!important}
-.stApp [data-baseweb="select"]:focus-within>div,.stApp [data-baseweb="input"]:focus-within{border-color:#2F6FD0!important;box-shadow:0 0 0 3px rgba(47,111,208,.22)!important}
+.stApp [data-baseweb="select"] *,.stApp [data-baseweb="input"] *,.stApp [data-baseweb="base-input"] *,.stApp [data-testid="stNumberInputContainer"],.stApp [data-testid="stNumberInputContainer"] *{background-color:
+.stApp [data-baseweb="select"]>div,.stApp [data-baseweb="input"]{border:1.5px solid 
+.stApp [data-baseweb="select"]:focus-within>div,.stApp [data-baseweb="input"]:focus-within{border-color:
 .stApp input:disabled{opacity:.45}
-div[data-baseweb="popover"] *{background-color:#fff!important;color:#0D1530!important}
-div[data-baseweb="popover"] li:hover,div[data-baseweb="popover"] li:hover *,div[data-baseweb="popover"] [aria-selected="true"],div[data-baseweb="popover"] [aria-selected="true"] *{background-color:#FFF0B8!important}
-.stApp [data-testid="stWidgetLabel"] p{color:#0D1530!important;font-weight:700!important}
-label[data-baseweb="radio"]{background:#fff!important;border:1.5px solid #C9D1E8!important;border-radius:999px!important;padding:.35rem .95rem .35rem .65rem!important;margin:0 6px 8px 0!important}
-label[data-baseweb="radio"]>div:first-child{background-color:#fff!important;border-color:#2F6FD0!important}
-label[data-baseweb="radio"],label[data-baseweb="radio"] *{color:#0D1530!important;font-weight:600}
-label[data-baseweb="radio"]:has(input:checked){background:#0D1530!important;border-color:#0D1530!important}
-label[data-baseweb="radio"]:has(input:checked),label[data-baseweb="radio"]:has(input:checked) p{color:#FACF35!important}
-label[data-baseweb="checkbox"]>span:first-child{background:#fff!important;border:2px solid #2F6FD0!important}
-label[data-baseweb="checkbox"]:has(input:checked)>span:first-child{background:#2F6FD0!important}
-label[data-baseweb="checkbox"] *{color:#0D1530!important}
-[role="tablist"]{background:#fff!important;border:0!important;border-radius:18px;padding:6px;gap:6px;box-shadow:0 16px 32px -16px rgba(80,50,0,.55)}
+div[data-baseweb="popover"] *{background-color:
+div[data-baseweb="popover"] li:hover,div[data-baseweb="popover"] li:hover *,div[data-baseweb="popover"] [aria-selected="true"],div[data-baseweb="popover"] [aria-selected="true"] *{background-color:
+.stApp [data-testid="stWidgetLabel"] p{color:
+label[data-baseweb="radio"]{background:
+label[data-baseweb="radio"]>div:first-child{background-color:
+label[data-baseweb="radio"],label[data-baseweb="radio"] *{color:
+label[data-baseweb="radio"]:has(input:checked){background:
+label[data-baseweb="radio"]:has(input:checked),label[data-baseweb="radio"]:has(input:checked) p{color:
+label[data-baseweb="checkbox"]>span:first-child{background:
+label[data-baseweb="checkbox"]:has(input:checked)>span:first-child{background:
+label[data-baseweb="checkbox"] *{color:
+[role="tablist"]{background:
 [data-baseweb="tab-highlight"],[data-baseweb="tab-border"]{display:none!important}
 [role="tab"]{border-radius:13px!important;padding:.75rem 1.4rem!important;background:transparent!important}
-[role="tab"],[role="tab"] *{color:#0D1530!important;font-size:1.08rem!important;font-weight:800!important}
-[role="tab"]:hover{background:#FFF0B8!important}
-[role="tab"][aria-selected="true"]{background:#0D1530!important}
-[role="tab"][aria-selected="true"] *{color:#FACF35!important}
-.stApp [data-testid="stCaptionContainer"],.stApp [data-testid="stCaptionContainer"] *,.stApp [data-testid="stExpander"] summary *,.stApp [data-testid="stExpanderDetails"] p:not([class]),.stApp [data-testid="stExpanderDetails"] li{color:#0D1530!important}
-.stApp [data-testid="stExpander"]{background:#fff!important;border:0!important;border-radius:16px!important}
-.stApp [data-testid^="stBaseButton"]{background:#fff!important;border:1.5px solid #0D1530!important;border-radius:999px!important}
-.stApp [data-testid^="stBaseButton"] *{color:#0D1530!important;font-weight:700!important}
-.stApp [data-testid^="stBaseButton"]:hover{background:#FACF35!important}
-.perks i{background:#fff;box-shadow:0 8px 16px -6px rgba(80,50,0,.45)}
+[role="tab"],[role="tab"] *{color:
+[role="tab"]:hover{background:
+[role="tab"][aria-selected="true"]{background:
+[role="tab"][aria-selected="true"] *{color:
+.stApp [data-testid="stCaptionContainer"],.stApp [data-testid="stCaptionContainer"] *,.stApp [data-testid="stExpander"] summary *,.stApp [data-testid="stExpanderDetails"] p:not([class]),.stApp [data-testid="stExpanderDetails"] li{color:
+.stApp [data-testid="stExpander"]{background
+.stApp [data-testid^="stBaseButton"]{background:
+.stApp [data-testid^="stBaseButton"] *{color:
+.stApp [data-testid^="stBaseButton"]:hover{background:
+.perks i{background:
 '''
 MANTAP_CSS = MANTAP_CSS.replace("</style>", MANTAP_FIX + "</style>")
 TEMA_NAMA = {"mantap": "☀️ Kuning Mantap", "neon": "🌌 Neon Aurora", "editorial": "📰 Showroom Editorial", "cockpit": "🕹️ Cockpit HUD", "brutal": "🟨 Neo-Brutal"}
 TEMA_CSS = {"mantap": MANTAP_CSS, "neon": "", "editorial": '<style>\n@import url(\'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;600;700&display=swap\');\n:root{--ink:#17140F;--txt:#2B2720;--mut:#6B6458;--dim:#8A8372;--line:rgba(23,20,15,.2);--acc:#C2410C;--cy:#C2410C;--vi:#17140F;--pk:#C2410C;--grad:linear-gradient(90deg,#17140F,#C2410C);--surf:#FFFDF8;--card:#FFFDF8;--track:rgba(23,20,15,.1);--hi:#FBE4D3;--onacc:#fff}\n.stApp,.stApp p,.stApp label,.stApp button,.stApp input,.stApp table{font-family:\'Inter\',sans-serif}\n.stApp{background:radial-gradient(rgba(23,20,15,.09) 1px,transparent 1px) 0 0/22px 22px,#F2ECDF!important}\n.hero h1,.rp,.stat b,.kpi b,.pc b,.dc b,.vt,.ins-h,.sum b,.pv{font-family:\'Fraunces\',Georgia,serif!important;letter-spacing:-.02em}\n.hero,.res,.vcard,.plan,.stop,.card2,.proj,.how,.pc,.stat,.kpi div,.sum,.st-key-spec{border-radius:3px!important;border:1.5px solid var(--ink)!important}\n.hero{border-width:2px!important;box-shadow:10px 10px 0 var(--acc)}\n.res,.vcard{box-shadow:6px 6px 0 var(--ink)}\n.pc:hover,.stat:hover{box-shadow:4px 4px 0 var(--acc)}\n.rp .num{font-weight:800}\n.badge{border-radius:0!important;border:1.5px solid var(--ink)!important;letter-spacing:.2em}\n.stat,.pc,.card2,.proj,.how,.kpi div,.sum,.chip,.badge,.st-key-spec{background:var(--surf)!important}\n.res,.vcard.ok,.vcard.low,.vcard.high,.plan,.stop,.hero{background:var(--card)!important}\n.pc.mid{background:var(--hi)!important}\n.gauge,.hb .ht,.meter i{background:var(--track)}\n.hero h1,.stat b,.how .st b,.pc b,.pv,.dc b,.vt,.sum b,.ins-h,.kpi b,.card2 h5,.proj h5,.hb .hv,.stop h3,.proj>p b,.badge{color:var(--ink)!important}\n.hero:before,.hero:after,.res:after{display:none}\n.hero .art,.res .carart{filter:brightness(0)}\n.hero .road{background:repeating-linear-gradient(90deg,var(--ink) 0 34px,transparent 34px 68px)}\n.needle{background:linear-gradient(var(--ink),rgba(0,0,0,.2));filter:none}\n.hub{background:var(--ink);box-shadow:0 0 0 5px var(--line)}\n.chip b,.note a,.ft a{color:var(--acc)}\n.tb td{color:var(--txt);border-bottom:1px solid var(--line)}\n.al.warn{background:#FFF1C9;border-color:#C98A00;color:#6B4400}\n.al.info{background:#E3F0F7;border-color:#2B7A9B;color:#0B4A5E}\n.stApp input,.stApp div[data-baseweb="select"] *,.stApp summary,.stApp summary *{color:var(--ink)!important}\ndiv[data-baseweb="select"]>div,div[data-baseweb="base-input"]{background:#fff!important}\ndiv[data-baseweb="popover"] ul,div[data-baseweb="popover"] li{background:#fff!important;color:#111!important}\ndiv[data-baseweb="popover"] li *{color:#111!important}\ndiv[data-baseweb="tab-list"]{background:var(--surf)}\nbutton[data-baseweb="tab"][aria-selected="true"],div[role="radiogroup"]>label:has(input:checked){background:var(--ink)!important;color:var(--onacc)}\ndiv[role="radiogroup"]>label{background:#fff}\n.stButton>button,.stDownloadButton>button{background:#fff;color:var(--ink)}\n</style>', "cockpit": '<style>\n@import url(\'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&display=swap\');\n:root{--line:rgba(255,176,0,.3);--txt:#E4F7E8;--mut:#86B293;--dim:#5C8068;--cy:#FFB000;--vi:#FFB000;--pk:#3CFF9A;--grad:linear-gradient(90deg,#FFB000,#3CFF9A)}\n.stApp,.stApp p,.stApp label,.stApp button,.stApp input,.stApp h1,.stApp h2,.stApp h3,.stApp table,.rp,.stat b,.kpi b,.pc b,.dc b,.sum b,.pv{font-family:\'JetBrains Mono\',monospace!important}\n.stApp{background:repeating-linear-gradient(0deg,rgba(60,255,154,.045) 0 1px,transparent 1px 3px),radial-gradient(900px 500px at 50% -10%,rgba(255,176,0,.16),transparent 60%),#050A08!important}\n.hero,.res,.vcard,.plan,.stop,.card2,.proj,.how,.pc,.stat,.kpi div,.sum,.st-key-spec,.chip,.badge{border-radius:2px!important;border:1px solid var(--line)!important;box-shadow:inset 0 0 26px rgba(255,176,0,.05)}\n.hero:before{background:radial-gradient(circle,rgba(60,255,154,.22),transparent 65%)}\n.hero h1{text-transform:uppercase;letter-spacing:-.01em!important}\n.hero .art,.res .carart{filter:sepia(1) saturate(5) hue-rotate(5deg) drop-shadow(0 0 14px rgba(255,176,0,.6))}\n.rp .num{filter:drop-shadow(0 0 14px rgba(255,176,0,.5))}\n.stat:hover,.pc:hover{border-color:#FFB000!important;box-shadow:0 0 22px rgba(255,176,0,.3)}\nbutton[data-baseweb="tab"][aria-selected="true"],div[role="radiogroup"]>label:has(input:checked){background:#FFB000!important;color:#000}\ndiv[role="radiogroup"]>label:has(input:checked) *{color:#000!important}\n.step i,.how .st i{color:#000}\n</style>', "brutal": '<style>\n@import url(\'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Mono:wght@500&display=swap\');\n:root{--ink:#000;--txt:#111;--mut:#333;--dim:#555;--line:#000;--acc:#3D5AFE;--cy:#3D5AFE;--vi:#3D5AFE;--pk:#FF5CA8;--grad:linear-gradient(90deg,#FF5CA8,#3D5AFE);--surf:#fff;--card:#fff;--track:#e2e2e2;--hi:#FFE14D;--onacc:#fff}\n.stApp,.stApp p,.stApp label,.stApp button,.stApp input,.stApp h1,.stApp table{font-family:\'Space Grotesk\',sans-serif}\n.stApp{background:#FFD93D!important}\n.rp,.stat b,.kpi b,.pc b,.pv,.sum b{font-family:\'DM Mono\',monospace!important}\n.hero,.res,.vcard,.plan,.stop,.card2,.proj,.how,.pc,.stat,.kpi div,.sum,.st-key-spec,.chip,.badge{border-radius:0!important;border:3px solid #000!important;box-shadow:6px 6px 0 #000}\n.pc,.stat,.kpi div,.sum,.chip{border-width:2px!important;box-shadow:3px 3px 0 #000}\n.hero{background:#FF8FC7!important}\n.hero h1{font-weight:800!important;text-transform:uppercase}\n.res,.vcard{transition:transform .15s,box-shadow .15s}\n.res:hover,.vcard:hover,.card2:hover,.proj:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 #000}\n.stat:hover,.pc:hover,.kpi div:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 #000}\n.badge{background:#FFD93D!important}\n.pb,.rb i{background:#3D5AFE!important;border:2px solid #000}\n.pcol.now .pb{background:#FF5CA8!important}\n.band{background:#FF5CA8;border:2px solid #000}\n.stat,.pc,.card2,.proj,.how,.kpi div,.sum,.chip,.badge,.st-key-spec{background:var(--surf)!important}\n.res,.vcard.ok,.vcard.low,.vcard.high,.plan,.stop,.hero{background:var(--card)!important}\n.pc.mid{background:var(--hi)!important}\n.gauge,.hb .ht,.meter i{background:var(--track)}\n.hero h1,.stat b,.how .st b,.pc b,.pv,.dc b,.vt,.sum b,.ins-h,.kpi b,.card2 h5,.proj h5,.hb .hv,.stop h3,.proj>p b,.badge{color:var(--ink)!important}\n.hero:before,.hero:after,.res:after{display:none}\n.hero .art,.res .carart{filter:brightness(0)}\n.hero .road{background:repeating-linear-gradient(90deg,var(--ink) 0 34px,transparent 34px 68px)}\n.needle{background:linear-gradient(var(--ink),rgba(0,0,0,.2));filter:none}\n.hub{background:var(--ink);box-shadow:0 0 0 5px var(--line)}\n.chip b,.note a,.ft a{color:var(--acc)}\n.tb td{color:var(--txt);border-bottom:1px solid var(--line)}\n.al.warn{background:#FFF1C9;border-color:#C98A00;color:#6B4400}\n.al.info{background:#E3F0F7;border-color:#2B7A9B;color:#0B4A5E}\n.stApp input,.stApp div[data-baseweb="select"] *,.stApp summary,.stApp summary *{color:var(--ink)!important}\ndiv[data-baseweb="select"]>div,div[data-baseweb="base-input"]{background:#fff!important}\ndiv[data-baseweb="popover"] ul,div[data-baseweb="popover"] li{background:#fff!important;color:#111!important}\ndiv[data-baseweb="popover"] li *{color:#111!important}\ndiv[data-baseweb="tab-list"]{background:var(--surf)}\nbutton[data-baseweb="tab"][aria-selected="true"],div[role="radiogroup"]>label:has(input:checked){background:var(--ink)!important;color:var(--onacc)}\ndiv[role="radiogroup"]>label{background:#fff}\n.stButton>button,.stDownloadButton>button{background:#fff;color:var(--ink)}\n</style>'}
 
 FUSION_CSS = r"""<style>
-:root{--ink:#0D1530;--yel:#FACF35;--blu:#2F6FD0;--cy:#FACF35;--vi:#FFB81C;--pk:#FF8A6B;--grad:linear-gradient(90deg,#FACF35,#FF9F43 55%,#F472B6)}
+:root{--ink:
 .stApp{background:radial-gradient(900px 520px at 6% -6%,rgba(250,207,53,.20),transparent 60%),radial-gradient(1000px 760px at 82% 22%,rgba(47,111,208,.50),transparent 66%),radial-gradient(700px 420px at 50% 112%,rgba(244,114,182,.12),transparent 60%),linear-gradient(180deg,#101A3D,#0B1330)!important}
 .block-container{max-width:1240px}
 .how{display:none}
@@ -393,7 +387,6 @@ div[role="radiogroup"]>label:has(input:checked) *{color:#0D1530!important}
 TEMA_CSS["fusion"] = FUSION_CSS
 TEMA_NAMA["fusion"] = "✨ Fusion (Neon + Mantap)"
 
-# ----------------------------------------------------------------------------- ilustrasi mobil (SVG)
 _BODI = {
     "Sedan": ("M18 76 L18 66 Q18 60 28 58 L58 53 L82 33 Q86 29 94 29 L148 29 Q156 29 162 35 L178 53 L212 59 Q224 61 224 69 L224 76 L197 76 A15 15 0 0 0 167 76 L81 76 A15 15 0 0 0 51 76 Z",
               "M72 52 L88 35 L124 35 L124 52 Z M130 35 L148 35 L166 52 L130 52 Z"),
@@ -427,7 +420,6 @@ def svg_mobil(bodi, tebal=2.6):
     return "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
 
 
-# ----------------------------------------------------------------------------- utilitas
 def h(s):
     """Jadikan satu baris tanpa indentasi: Markdown tidak akan salah menafsirkan HTML-nya."""
     return " ".join(line.strip() for line in s.strip().splitlines() if line.strip())
@@ -542,7 +534,6 @@ def ringkasan_teks(spek, hasil):
     )
 
 
-# ----------------------------------------------------------------------------- potongan HTML
 WARNA_KEYAKINAN = {"Tinggi": "#34D399", "Sedang": "#FBBF24", "Rendah": "#FB923C"}
 SEGMEN = {"Tinggi": 3, "Sedang": 2, "Rendah": 1}
 PENJELASAN = {
@@ -848,7 +839,6 @@ def html_tabel_akurasi(skor):
             f'<th>Median (%)</th></tr>{baris}</table>')
 
 
-# ----------------------------------------------------------------------------- muat model
 try:
     paket = muat_model()
 except Exception as e:
@@ -873,7 +863,6 @@ tampil(TEMA_CSS[tema])
 if tema not in ("mantap", "fusion"):
     tampil(html_hero(info))
 
-# ----------------------------------------------------------------------------- state & contoh cepat
 CONTOH = {
     "Avanza 2018": dict(merek="Toyota", model="Avanza", tahun=2018, transmisi="Manual", bahan_bakar="Bensin",
                         bodi="MPV", km=60000, km_na=False, mesin=1.3),
@@ -899,11 +888,9 @@ def pakai_contoh(nama):
 def kartu(nama):
     try:
         return st.container(border=True, key=nama)
-    except TypeError:            # Streamlit versi lama belum punya parameter key
+    except TypeError:
         return st.container(border=True)
 
-
-# ----------------------------------------------------------------------------- tata letak utama
 if tema in ("mantap", "fusion"):
     kol_hero, kiri = st.columns([6, 5], gap="large")
     with kol_hero:
@@ -1007,7 +994,6 @@ with kanan:
         with tab_insight:
             tampil(html_insight())
 
-# ----------------------------------------------------------------------------- info tambahan
 st.write("")
 e1, e2 = st.columns(2, gap="large")
 with e1:
