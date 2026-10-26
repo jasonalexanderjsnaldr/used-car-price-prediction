@@ -4,12 +4,12 @@
 
 **Isi spesifikasi mobil → dapatkan estimasi harga, rentang wajar, dan tingkat keyakinan model.**
 
-[![Python](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.15-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-Gradient%20Boosting-F7931E?logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![Data](https://img.shields.io/badge/Data-19.472%20iklan-8B5CF6)](#-data)
 
-### [▶ Coba demo langsung](https://GANTI-DENGAN-LINK-APP.streamlit.app)
+### [▶ Coba demo langsung](https://used-car-price-prediction-8.streamlit.app/)
 
 </div>
 
